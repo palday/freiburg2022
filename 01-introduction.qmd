@@ -61,11 +61,8 @@ your inference.
 ### Extending this all to GLMM
 - Lower power
 - Link functions and a different observation-level random component
+- Conditional vs. marginal effects
 
-# Back to basics
-
-
-##
 # How do you write your model?
 
 ## The general linear model
@@ -204,13 +201,15 @@ It is much more convenient when we start looking at extensions of linear regress
 - The reponse, conditional on the predicted mean $\mu$ is normally distributed
 - $\sigma^2 \bf{I}$ homoskedacity in a multivariate context:
   - single shared residual variance ($\sigma^2$)
-  - no autocorrelation or the like (everything happens on the diagonal $I$)
-- The observed random effects $\bf{b}$ are draws from some latent distribution $\mathcal{B}$, whihc is normally distributed with mean 0 and some covariance structure $\Sigma _\theta$.
+  - no autocorrelation or the like (everything happens on the diagonal $\bf{I}$)
+- $\bf{Z}$ is a matrix of indicator variables for levels (individual membership) of the grouping variable
+- The predicted mean for an individual is thus the sum of the population-level effect ($\bf{X\beta}$) and the predicted offsets for that individual ($\bf{b}$).
+- The observed random effects $\bf{b}$ are draws from some latent distribution $\mathcal{B}$, which is normally distributed with mean 0 and some covariance structure $\Sigma _\theta$.
 - Technically, we're not estimating the $\bf{b}$, but rather *predicting* them. Instead, we're estimating their covariance $\Sigma _\theta$.
 - This is actually really profound and important because it means we don't add additional parameters to the model when adding e.g. additional participants, items, etc.
 - More on this and its relationship to "shrinkage" in just a bit.
 
-## Practice round: how does math match a model in R/Julia??
+## Practice round: how does math match a model in R/Julia?
 
 \begin{align*}
 (\mathcal{Y} | \mathcal{B} = \bf{b} ) &\sim \mathcal{N}(\bf{\mu}, \sigma^2 \bf{I} ) \\
@@ -241,5 +240,13 @@ days          10.4673     1.50224   6.97    <1e-11
 ```
 
 ## What does the term "random effect" refer to anyway?
+
 Depending on context, it can refer to:
-- the entire random variable \mathcal{B}$,
+
+- the entire random variable $\mathcal{B}$ and associated design matrix $\bf{Z}$
+- the estimated variance components and associated covariances/correlations $\Sigma _\theta$
+- the blocking/grouping variables (the stuff behind `|`)
+- the ("random") slopes/intercepts (experimental variables which determine the structure of $\bf{Z}$) associated with blocking variables (the stuff in front of `|`)
+- the associated predictions for the varying slopes/intercepts at each level of the blocking varibels (the $\bf{b}, a.k.a the BLUPs or conditional modes; more on this later)
+
+There are good reasons why all of these things get the same name in different contexts, so you just have to live with. But understanding that these are different will help you to be clear in your own writing and to understand where others may be having misunderstandings.
