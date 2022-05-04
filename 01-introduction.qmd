@@ -7,12 +7,8 @@ theme: Singapore
 slide-level: 2
 csl: apa.csl
 lang: en-US
-output:
-    beamer_presentation:
-        fig_width: 4.5
-        fig_height: 3
-        fig_caption: false
-        pandoc_args: ["--wrap=none"]
+format: beamer
+links-as-notes: true
 ---
 
 # Preliminaries
@@ -30,7 +26,7 @@ output:
 also: minor contributor to lme4, occasionally prolific contributor to R-SIG-mixed-models,
 major contributor to MixedModels.jl
 
-## Plan {.shrink}
+## Plan I
 
 This is waaaay more than we can do in a single day, but we'll spend as much time as needed on the fundamentals and pick and choose the advanced topics based on that.
 
@@ -41,6 +37,8 @@ This is waaaay more than we can do in a single day, but we'll spend as much time
     - where are the assumptions?
 - How mixed models differ from classical regression and what that means for things like degrees of freedom and hence p-values
 - Reminder about contrast coding
+
+## Plan II {.shrink}
 
 ### Parametric bootstrap and power analysis
 - The parametric bootstrap is a simulation!
@@ -54,7 +52,7 @@ This is waaaay more than we can do in a single day, but we'll spend as much time
 ### Rank deficiency in the random effects and random effects selection
 - What does it mean for the model to be rank deficient/singular/a boundary fit?
 - Practical impacts of rank deficiency for various tests/convergence
-warnings  (see also lme4 v1.1-29 (2022-04-07))
+warnings <!-- (see also lme4 v1.1-29 (2022-04-07)) -->
 - Variance-bias tradeoff; over- vs. underfitting and what that means for
 your inference.
 
@@ -154,7 +152,7 @@ y_n \\
 %}_{\textstyle\bf Y = X\beta + \varepsilon}
 \end{equation*}
 
-becomes $\bf y = X\beta + \varepsilon$
+becomes $y = X\beta + \varepsilon$
 
 \note{
 \begin{itemize}
@@ -167,13 +165,13 @@ becomes $\bf y = X\beta + \varepsilon$
 ## Matrix level
 ### "Error terms" formulation
 
-$$\bf y = X\beta + \varepsilon$$
+$$Y = X\beta + \varepsilon$$
 $$\varepsilon \sim \mathcal{N}(0,\sigma^2)$$
 
 ### "Distribution" formulation
 
-$$\bf y \sim \mathcal{N}(\mu,\sigma^2)$$
-$$\bf \mu = X\beta $$
+$$Y \sim \mathcal{N}(\mu,\sigma^2)$$
+$$\mu = X\beta $$
 
 ---
 
@@ -186,42 +184,94 @@ We usually learn and conceive of the linear model in terms of "line of best fit"
 It is much more convenient when we start looking at extensions of linear regression, such as the linear mixed-effects model:
 
 \begin{align*}
-(\mathcal{Y} | \mathcal{B} = \bf{b} ) &\sim \mathcal{N}(\bf{ X\beta + Z b}, \sigma^2 \bf{I} ) \\
-  \mathcal{B} &\sim \mathcal{N}(\bf{0}, \Sigma _\theta)
+(Y | B = b ) &\sim \mathcal{N}( X\beta + Zb, \sigma^2 I ) \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
 \end{align*}
 
-## What do these parts all mean?
+# Digression: Maximum Likelihood Estimation
+
+## What does it mean to fit a (classical linear) model?
+
+$$Y \sim \mathcal{N}(\mu,\sigma^2)$$
+$$\mu = X\beta $$
+
+- Minimize sum of squares? (and what sum of squares are we talking about?)
+- Maximize likelihood?
+- Minimize deviance?
+
+. . .
+
+- All equivalent for classical linear models
+- Also equivalent to finding $\beta$ that leads to the smallest $\sigma^2$
+- Ordinary least squares is the maximum likelihood estimator and BLUE (best, linear unbiased estimator  )
+
+## What is likelihood? I
+One of the hardest parts about statistics (and math in general) is that everyday words are given precise technical meanings.
+
+- $P(H|D)$: posterior probability
+- $P(D|H)$: likelihood
+
+Related via Bayes' Theorem:
+$$ P(H|D) = \frac{P(D|H)P(H)}{P(D)}$$
+
+## What is likelihood? II
+
+> ... remember that "likelihood" is a technical term. The likelihood of $H$, $Pr(O\|H)$, and the posterior probability of $H$, $Pr(H\|O)$, are different quantities and they can have different values. The likelihood of $H$ is the probability that $H$ confers on $O$, not the probability that $O$ confers on $H$. Suppose you hear a noise coming from the attic of your house. You consider the hypothesis that there are gremlins up there bowling. The likelihood of this hypothesis is very high, since if there are gremlins bowling in the attic, there probably will be noise. But surely you don’t think that the noise makes it very probable that there are gremlins up there bowling. ... The gremlin hypothesis has a high likelihood (in the technical sense) but a low probability.
+
+
+\tiny
+
+Sober, E. (2008). Evidence and Evolution: the Logic Behind the Science. Cambridge University Press.
+
+## Maximum likelihood estimation (MLE)
+* find the coefficients / predictor that maximizes the likelihood
+* i.e. find the quantitative hypothesis which has the best chance of generating the observed data
+* many numerical, iterative techniques for doing this (implemented in R with `glm()`)
+* some classes of models have a closed-form / easily / directly computable solution (e.g. ordinary least-squares, implemented in R with `lm()`)
+
+Most of the methods you know are based on this technique.
+
+# What does the math mean for mixed models?
+
+## What do these parts all mean? I
 
 \begin{align*}
-(\mathcal{Y} | \mathcal{B} = \bf{b} ) &\sim \mathcal{N}(\bf{\mu}, \sigma^2 \bf{I} ) \\
-  \bf{\mu} &= \bf{ X\beta + Z b} \\
-  \mathcal{B} &\sim \mathcal{N}(\bf{0}, \Sigma _\theta)
+(Y | B = b ) &\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &= X\beta + Zb \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
 \end{align*}
 
 - The reponse, conditional on the predicted mean $\mu$ is normally distributed
-- $\sigma^2 \bf{I}$ homoskedacity in a multivariate context:
+- $\sigma^2 I$ is homoskedacity in a multivariate context:
   - single shared residual variance ($\sigma^2$)
   - no autocorrelation or the like (everything happens on the diagonal $\bf{I}$)
-- $\bf{Z}$ is a matrix of indicator variables for levels (individual membership) of the grouping variable
-- The predicted mean for an individual is thus the sum of the population-level effect ($\bf{X\beta}$) and the predicted offsets for that individual ($\bf{b}$).
-- The observed random effects $\bf{b}$ are draws from some latent distribution $\mathcal{B}$, which is normally distributed with mean 0 and some covariance structure $\Sigma _\theta$.
-- Technically, we're not estimating the $\bf{b}$, but rather *predicting* them. Instead, we're estimating their covariance $\Sigma _\theta$.
+- $Z$ is a matrix of indicator variables for levels (individual membership) of the grouping variable
+- The predicted mean for an individual is thus the sum of the population-level effect ($X\beta$) and the predicted offsets for that individual ($b$).
+
+## What do these parts all mean? II
+
+\begin{align*}
+(Y | B = b ) &\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &= X\beta + Zb \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}
+
+- The observed random effects $b$ are draws from some latent distribution $B$, which is normally distributed with mean 0 and some covariance structure $\Sigma _\theta$.
+- Technically, we're not estimating the $b$, but rather *predicting* them. Instead, we're estimating their covariance $\Sigma _\theta$.
 - This is actually really profound and important because it means we don't add additional parameters to the model when adding e.g. additional participants, items, etc.
 - More on this and its relationship to "shrinkage" in just a bit.
 
-## Practice round: how does math match a model in R/Julia?
+## How does math match a model in R/Julia? I
 
 \begin{align*}
-(\mathcal{Y} | \mathcal{B} = \bf{b} ) &\sim \mathcal{N}(\bf{\mu}, \sigma^2 \bf{I} ) \\
-  \bf{\mu} &= \bf{ X\beta + Z b} \\
-  \mathcal{B} &\sim \mathcal{N}(\bf{0}, \Sigma _\theta)
+(Y | B = b ) &\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &= X\beta + Zb \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
 \end{align*}
 
 ```julia
 Linear mixed model fit by maximum likelihood
  reaction ~ 1 + days + (1 + days | subj)
-   logLik   -2 logLik     AIC       AICc        BIC
-  -875.9697  1751.9393  1763.9393  1764.4249  1783.0971
 
 Variance components:
             Column    Variance Std.Dev.   Corr.
@@ -229,7 +279,17 @@ subj     (Intercept)  565.51067 23.78047
          days          32.68212  5.71683 +0.08
 Residual              654.94145 25.59182
  Number of obs: 180; levels of grouping factors: 18
+```
 
+## How does math match a model in R/Julia? II
+
+\begin{align*}
+(Y | B = b ) &\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &= X\beta + Zb \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}
+
+```julia
   Fixed-effects parameters:
 ──────────────────────────────────────────────────
                 Coef.  Std. Error      z  Pr(>|z|)
@@ -243,10 +303,104 @@ days          10.4673     1.50224   6.97    <1e-11
 
 Depending on context, it can refer to:
 
-- the entire random variable $\mathcal{B}$ and associated design matrix $\bf{Z}$
+- the entire random variable $B$ and associated design matrix $Z$
 - the estimated variance components and associated covariances/correlations $\Sigma _\theta$
 - the blocking/grouping variables (the stuff behind `|`)
-- the ("random") slopes/intercepts (experimental variables which determine the structure of $\bf{Z}$) associated with blocking variables (the stuff in front of `|`)
-- the associated predictions for the varying slopes/intercepts at each level of the blocking varibels (the $\bf{b}, a.k.a the BLUPs or conditional modes; more on this later)
+- the random  slopes/intercepts (experimental variables which determine the structure of $Z$) associated with blocking variables (the stuff in front of `|`)
+- the associated predictions for the varying slopes/intercepts at each level of the blocking variables (the $b$, a.k.a the BLUPs or conditional modes)
 
-There are good reasons why all of these things get the same name in different contexts, so you just have to live with. But understanding that these are different will help you to be clear in your own writing and to understand where others may be having misunderstandings.
+There are good reasons why all of these things get the same name in different contexts, so you just have to live with the ambiguity. But understanding that these are different will help you to be clear in your own writing and to understand where others may be having misunderstandings.
+
+## Why variances? What is shrinkage?
+
+\begin{align*}
+(Y | B = b ) &\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &= X\beta + Zb \\
+  B &\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}
+
+- fewer parameters
+- everything in one model step
+- sharing of information between different levels of the grouping variables
+  - "sharing strength" (Tukey)
+  - "partial pooling"
+  - regularization / shrinkage towards the grand mean
+- shared strength means better estimates for the weak
+- in OLS, our goal was in some sense to minimize $\sigma^2$; here are goal in some sense is to jointly minimize $\sigma^2$ and $\Sigma _\theta$
+
+## Regularization
+
+```{r}
+#| label: fig:r-sleepstudy-lines
+#| warning: false
+#| echo: false
+library("lme4")
+library("lattice")
+
+df <- coef(lmList(Reaction ~ Days | Subject, sleepstudy))
+fm2 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
+fclow <- subset(df, `(Intercept)` < 251)
+fchigh <- subset(df, `(Intercept)` > 251)
+cc1 <- as.data.frame(coef(fm2)$Subject)
+names(cc1) <- c("A", "B")
+df <- cbind(df, cc1)
+ff <- fixef(fm2)
+
+xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
+            type = c("g", "p", "r"),
+             coef.list = df[,3:4],
+             panel = function(..., coef.list) {
+                 panel.xyplot(...)
+                 panel.abline(as.numeric(coef.list[packet.number(),]),
+                              col.line = trellis.par.get("superpose.line")$col[2],
+                              lty = trellis.par.get("superpose.line")$lty[2]
+                              )
+                 panel.abline(fixef(fm2),
+                             col.line = trellis.par.get("superpose.line")$col[3],
+                             lty = trellis.par.get("superpose.line")$lty[3]
+                             )
+             },
+             index.cond = function(x,y) coef(lm(y ~ x))[1],
+             xlab = "Days of sleep deprivation",
+             ylab = "Average reaction time (ms)",
+             key = list(space = "right", columns = 1,
+             text = list(c("Within-subject", "Mixed model", "Population")),
+             lines = list(col = trellis.par.get("superpose.line")$col[1:3],
+             lty = trellis.par.get("superpose.line")$lty[1:3])))
+```
+
+## Shrinkage
+```{r}
+#| label: fig:r-sleepstudy-shrinkage
+#| warning: false
+#| echo: false
+
+with(df,
+     print(xyplot(`(Intercept)` ~ Days, aspect = 1,
+                  x1 = B, y1 = A,
+                  panel = function(x, y, x1, y1, subscripts, ...) {
+                      panel.grid(h = -1, v = -1)
+                      x1 <- x1[subscripts]
+                      y1 <- y1[subscripts]
+                      larrows(x, y, x1, y1, type = "closed", length = 0.1,
+                              angle = 15, ...)
+                      lpoints(x, y,
+                              pch = trellis.par.get("superpose.symbol")$pch[1],
+                              col = trellis.par.get("superpose.symbol")$col[1])
+                      lpoints(x1, y1,
+                              pch = trellis.par.get("superpose.symbol")$pch[2],
+                              col = trellis.par.get("superpose.symbol")$col[2])
+                      lpoints(ff[2], ff[1],
+                              pch = trellis.par.get("superpose.symbol")$pch[3],
+                              col = trellis.par.get("superpose.symbol")$col[3])
+                      ltext(fclow[,2], fclow[,1], row.names(fclow),
+                            adj = c(0.5, 1.7))
+                      ltext(fchigh[,2], fchigh[,1], row.names(fchigh),
+                            adj = c(0.5, -0.6))
+                  },
+                  key = list(space = "right", columns = 1,
+                  text = list(c("Within-group", "Mixed model", "Population")),
+                  points = list(col = trellis.par.get("superpose.symbol")$col[1:3],
+                  pch = trellis.par.get("superpose.symbol")$pch[1:3]))
+                  )))
+```
