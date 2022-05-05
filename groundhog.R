@@ -4,7 +4,7 @@ if(!require("groundhog")){
     library("groundhog")
 }
 
-pkgs <- c("afex", "broom", "broom.mixed", "car", "effects", "effectsize", "emmeans",
+pkgs <- c("afex", "broom", "broom.mixed", "car", "correlate", "designr", "effects", "effectsize", "emmeans",
         "ggeffects", "Hmisc", "lattice", "latticeExtra", "lme4", "lmerTest",
         "modelbased", "performance", "report", "robustlmm", "rms", "see", "simr", "sjPlot", "sjmisc", "stringr", "tidyverse")
 
