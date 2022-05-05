@@ -3,12 +3,9 @@ title: Simulation in R
 subtitle: Finally Getting to Actually Do Simulation
 author: Phillip Alday
 date: 6 May 2022
-theme: Singapore
-slide-level: 2
 csl: apa.csl
 lang: en-US
 format: html
-links-as-notes: true
 ---
 
 # From math to code
@@ -17,10 +14,11 @@ links-as-notes: true
 
 $$Y \sim \mathcal{N}(\mu,\sigma^2)$$
 $$\mu = X\beta $$
+
 - tildes/distributions correspond to the `r*` family of functions (random draws)
 - everything else is a little bit of matrix math
 
-## Simple Linear Regression {.shrink}
+## Simple Linear Regression
 
 ```{r}
 library("groundhog")
@@ -41,7 +39,7 @@ dat$y <- X %*% beta + dat$y
 summary(lm(form, dat))
 ```
 
-## Multiple Linear Regression {.shrink}
+## Multiple Linear Regression
 
 ```{r}
 set.seed(42)
@@ -63,7 +61,7 @@ m2 <- lm(form, dat)
 summary(m2)
 ```
 
-## Not quite contrast coding, but the same problem {.shrink}
+## Not quite contrast coding, but the same problem
 
 ```{r}
 set.seed(42)
@@ -87,23 +85,27 @@ summary(m2c)
 
 
 ## Effects plots are your friend I
+
 ```{r}
 groundhog.library("effects", "2022-04-28")
 plot(allEffects(m2), multiline=TRUE, ci.style="band")
 ```
 
 ## Effects plots are your friend II
+
 ```{r}
 plot(allEffects(m2), multiline=TRUE, ci.style="band")
 ```
 
 ## Centering, scaling and contrast coding in linear regression
+
 - Linear transformations of the numeric representation of your predictors changes the meaning and interpretation of your model coefficients
 - Likewise, the way that categorical variables are changed into contrasts determines the meaning and interpretation of your model coefficients
 - You cannot understand what a model means without knowing the choice of contrast and any transformation of numeric predictors! (see also Brehm and Alday, JML, in press)
 - This is just as critical for simulation, if you want to simulate your hypotheses!
 
 ## Doing this in Julia
+
 ```{julia}
 using DataFrames, GLM, StatsModels, Random
 
@@ -122,7 +124,6 @@ dat = DataFrame(y=sig * randn(rng, n), # multiply by sd to scale
 # "hints" is the argument contrasts, etc.
 X = modelmatrix(form, dat);
 
-dat[!, :y] .=  X * beta .+ dat[!, :y];
 
 m2 = lm(form, dat)
 ```
@@ -226,6 +227,7 @@ summary(lm(form, dat))
 - everything else is a little bit of matrix math
 
 ## A basic example
+
 ```{r}
 set.seed(42)
 groundhog.library("lme4", "2022-04-28")
@@ -289,7 +291,7 @@ dat <- data.frame(y=rnorm(n, sd=sig),
 
 X <- model.matrix(form_fe, dat)
 Z_int <- model.matrix(~ 0 + subj, dat)
-Z_slope <- ...
+Z_slope <- ... # I can't be bothered ot actually do write this out....
 Z <- cbind(Z_int, Z_slope)
 
 dat$y <- X %*% beta + Z %*% b + dat$y
@@ -545,12 +547,14 @@ experiment$rt <- simulate(mm_sim)[, 1]
 ```
 
 ## Fitting the True Model
+
 ```{r}
 mm_true <- lmer(true_form, data=experiment, REML=FALSE, control=lmerControl(calc.derivs=FALSE))
 summary(mm_true)
 ```
 
 ## Fitting a Reduced Model
+
 ```{r}
 form <- rt ~ 1 + positive_statement * spkr_gender * subj_age * subj_gender +
             (1 + positive_statement + spkr_age + spkr_gender| subj) +
@@ -566,6 +570,7 @@ summary(rePCA(mm_reduced))
 ```
 
 ## Can't do it just once ....
+
 - But doing things 1000x for each of a dozen different settings is a LOT of computation
 - R has lots of nice features and it's gotten faster, but...
 - Julia is faster

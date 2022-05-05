@@ -6,12 +6,23 @@ project:
   type: website
 
 website:
+  page-footer: "Copyright 2022, Phillip Alday. Code examples are MIT-licensed."
+  repo-url: https://github.com/palday/freiburg2022
+  repo-actions: [edit, issue]
   navbar:
     background: primary
+    search: false
     left:
-      - README.md
+      - text: "Home"
+        file: index.qmd
+      - 01-introduction.qmd
+      - 02-simulation-in-R.qmd
+      - 03-simulation-and-the-bootstrap-in-Julia.qmd
+  sidebar:
+    style: "floating"
+    toc-depth: 4
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true
+    toc-depth: 4
