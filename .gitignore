@@ -41,3 +41,6 @@ vignettes/*.pdf
 *\~
 
 *.html
+
+/.quarto/
+_output/

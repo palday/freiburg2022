@@ -3,11 +3,14 @@ title: Introduction to Simulation
 subtitle: Review of Mixed Models and Introduction to Model Notation
 author: Phillip Alday
 date: 6 May 2022
-theme: Singapore
 slide-level: 2
 csl: apa.csl
 lang: en-US
-format: beamer
+format:
+  html:
+    toc: true
+  beamer:
+    theme: Singapore
 links-as-notes: true
 ---
 

@@ -1,0 +1,17 @@
+project:
+  title: "Using Simulation to Understand Mixed Models in the Wild"
+  author: "Phillip M. Alday"
+  date: "6 May 2022"
+  output-dir: _output
+  type: website
+
+website:
+  navbar:
+    background: primary
+    left:
+      - README.md
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
