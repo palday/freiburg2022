@@ -33,19 +33,61 @@ ProgressMeter.ijulia_behavior(:clear);
 
 
 ```{julia}
+kb07 = MixedModels.dataset(:kb07)
+contrasts = Dict(:subj => Grouping(),
+                 :item => Grouping(),
+                 :spkr => EffectsCoding(),
+                 :prec => EffectsCoding(),
+                 :load => EffectsCoding())
+form = @formula(rt_trunc ~ 1 + spkr * prec * load +
+                          (1 + spkr * prec * load | subj) +
+                          (1 + spkr * prec * load | item))
+model = fit(MixedModel, form, kb07; contrasts)
+```
+
+```{julia}
+model.rePCA
+```
+
+
+```{julia}
+shrinkageplot(model, :subj)
+```
+
+
+```{julia}
+shrinkageplot(model, :item)
+```
+
+
+```{julia}
 rng = MersenneTwister(42)
-form = @formula(y ~ 1 + x)
+dat = DataFrame(kb07; copycols=true)
 
-beta = [1, 42]
-sig =  1 # try 3.14
-n = 500 # try 100, 200, 500, 1000
-n_subj = 20 # try 10, 15, 6
-# was it better to increase n or n_subj?
-subj_sd = 0.5
-b <- rnorm(n_subj, sd=subj_sd)
+simple_form = @formula(rt_trunc ~ 1 + spkr * prec * load +
+                          (1 + spkr + prec + load | subj) +
+                          (1 + spkr + prec + load | item))
 
-dat <- data.frame(y=rnorm(n, sd=sig),
-                  x=runif(n, -10, 10),
-                  subj=sample(LETTERS[1:n_subj], n, replace=TRUE))
+results = DataFrame()
 
+simple_model = fit(MixedModel, simple_form, kb07; contrasts)
+
+@showprogress for i in 1:100
+    # dat[!, :rt_runc]
+    refit!(simple_model, simulate(rng, model); progress=false)
+    est = DataFrame(coeftable(simple_model))
+    est[!, :iter] .= i
+    append!(results, est)
+end
+
+rename!(results,
+        "Name" => "coef",
+        "Coef." => "est",
+        "Std. Error" => "se",
+         "Pr(>|z|)" => "p")
+```
+
+```{julia}
+plt = data(results) * mapping(:est; layout=:coef) * AlgebraOfGraphics.density()
+draw(plt)
 ```
