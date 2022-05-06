@@ -1,9 +1,9 @@
 # from https://github.com/quarto-dev/quarto-actions/blob/88c601d55711586fea60b2bd3bca45d811f2b062/examples/quarto-book-gh-pages.yaml
 on:
-  push:
-    branches: main
-  pull_request:
-    branches: main
+  # push:
+  #   branches: main
+  # pull_request:
+  #   branches: main
   # to be able to trigger a manual build
   workflow_dispatch:
 
