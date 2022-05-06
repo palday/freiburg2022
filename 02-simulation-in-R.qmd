@@ -94,7 +94,7 @@ plot(allEffects(m2), multiline=TRUE, ci.style="band")
 ## Effects plots are your friend II
 
 ```{r}
-plot(allEffects(m2), multiline=TRUE, ci.style="band")
+plot(allEffects(m2c), multiline=TRUE, ci.style="band")
 ```
 
 ## Centering, scaling and contrast coding in linear regression
