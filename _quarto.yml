@@ -1,0 +1,28 @@
+project:
+  title: "Using Simulation to Understand Mixed Models in the Wild"
+  author: "Phillip M. Alday"
+  date: "6 May 2022"
+  output-dir: _output
+  type: website
+
+website:
+  page-footer: "Copyright 2022, Phillip Alday. Code examples are MIT-licensed."
+  repo-url: https://github.com/palday/freiburg2022
+  repo-actions: [edit, issue]
+  navbar:
+    background: primary
+    search: false
+    left:
+      - text: "Home"
+        file: index.qmd
+      - 01-introduction.qmd
+      - 02-simulation-in-R.qmd
+      - 03-simulation-and-the-bootstrap-in-Julia.qmd
+  sidebar:
+    style: "floating"
+    toc-depth: 4
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 4

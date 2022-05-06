@@ -1,0 +1,104 @@
+---
+title: Simulation in Julia
+subtitle: How I learned to stop worrying and love the bootstrap
+author: Phillip Alday
+date: 6 May 2022
+csl: apa.csl
+lang: en-US
+format: html
+links-as-notes: true
+execute-dir: project
+jupyter: julia-1.7
+---
+
+# Recall....
+
+```{julia}
+using AlgebraOfGraphics
+using CairoMakie
+using DataFrames
+using GLM
+using MixedModels
+using MixedModelsMakie
+using MixedModelsExtras
+using MixedModelsSim
+using ProgressMeter
+using StatsModels
+using StatsBase
+using Random
+
+
+CairoMakie.activate!(; type="svg")
+ProgressMeter.ijulia_behavior(:clear);
+```
+
+
+```{julia}
+kb07 = MixedModels.dataset(:kb07)
+contrasts = Dict(:subj => Grouping(),
+                 :item => Grouping(),
+                 :spkr => EffectsCoding(),
+                 :prec => EffectsCoding(),
+                 :load => EffectsCoding())
+form = @formula(rt_trunc ~ 1 + spkr * prec * load +
+                          (1 + spkr * prec * load | subj) +
+                          (1 + spkr * prec * load | item))
+model = fit(MixedModel, form, kb07; contrasts)
+```
+
+```{julia}
+model.rePCA
+```
+
+
+```{julia}
+shrinkageplot(model, :subj)
+```
+
+
+```{julia}
+shrinkageplot(model, :item)
+```
+
+
+```{julia}
+rng = MersenneTwister(42)
+dat = DataFrame(kb07; copycols=true)
+
+simple_form = @formula(rt_trunc ~ 1 + spkr * prec * load +
+                          (1 + spkr + prec + load | subj) +
+                          (1 + spkr + prec + load | item))
+
+results = DataFrame()
+
+simple_model = fit(MixedModel, simple_form, kb07; contrasts)
+
+@showprogress for i in 1:100
+    # dat[!, :rt_runc]
+    refit!(simple_model, simulate(rng, model); progress=false)
+    est = DataFrame(coeftable(simple_model))
+    est[!, :iter] .= i
+    append!(results, est)
+end
+
+rename!(results,
+        "Name" => "coef",
+        "Coef." => "est",
+        "Std. Error" => "se",
+         "Pr(>|z|)" => "p")
+```
+
+```{julia}
+plt = data(results) * mapping(:est; layout=:coef) * AlgebraOfGraphics.density()
+draw(plt)
+```
+
+```{julia}
+combine(groupby(results, :coef), :est => shortestcovint => :est)
+```
+
+
+```{julia}
+combine(groupby(results, :coef),
+        :p => (x -> mean(x .< 0.05)) => :percent_significant)
+```
