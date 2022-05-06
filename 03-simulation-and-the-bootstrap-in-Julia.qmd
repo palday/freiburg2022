@@ -24,6 +24,7 @@ using MixedModelsExtras
 using MixedModelsSim
 using ProgressMeter
 using StatsModels
+using StatsBase
 using Random
 
 
@@ -90,4 +91,14 @@ rename!(results,
 ```{julia}
 plt = data(results) * mapping(:est; layout=:coef) * AlgebraOfGraphics.density()
 draw(plt)
+```
+
+```{julia}
+combine(groupby(results, :coef), :est => shortestcovint => :est)
+```
+
+
+```{julia}
+combine(groupby(results, :coef),
+        :p => (x -> mean(x .< 0.05)) => :percent_significant)
 ```
