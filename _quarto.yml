@@ -1,8 +1,9 @@
+author: "Phillip M. Alday"
+date: "6 May 2022"
+
 project:
   title: "Using Simulation to Understand Mixed Models in the Wild"
-  author: "Phillip M. Alday"
-  date: "6 May 2022"
-  output-dir: _output
+  output-dir: docs
   type: website
 
 website:
