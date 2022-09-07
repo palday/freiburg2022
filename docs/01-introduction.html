@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Phillip Alday">
+<meta name="dcterms.date" content="2022-05-06">
+
+<title>Introduction to Simulation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./01-introduction.html" aria-current="page">Introduction to Simulation</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./02-simulation-in-R.html">Simulation in R</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./03-simulation-and-the-bootstrap-in-Julia.html">Simulation in Julia</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Introduction to Simulation</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#preliminaries" id="toc-preliminaries" class="nav-link active" data-scroll-target="#preliminaries">Preliminaries</a>
+  <ul>
+  <li><a href="#about-me" id="toc-about-me" class="nav-link" data-scroll-target="#about-me">About Me</a></li>
+  <li><a href="#plan-i" id="toc-plan-i" class="nav-link" data-scroll-target="#plan-i">Plan I</a>
+  <ul class="collapse">
+  <li><a href="#what-is-a-mixed-model-and-how-can-we-use-that-to-design-a-simulation" id="toc-what-is-a-mixed-model-and-how-can-we-use-that-to-design-a-simulation" class="nav-link" data-scroll-target="#what-is-a-mixed-model-and-how-can-we-use-that-to-design-a-simulation">What is a mixed model and how can we use that to design a simulation?</a></li>
+  </ul></li>
+  <li><a href="#plan-ii" id="toc-plan-ii" class="nav-link" data-scroll-target="#plan-ii">Plan II</a>
+  <ul class="collapse">
+  <li><a href="#parametric-bootstrap-and-power-analysis" id="toc-parametric-bootstrap-and-power-analysis" class="nav-link" data-scroll-target="#parametric-bootstrap-and-power-analysis">Parametric bootstrap and power analysis</a></li>
+  <li><a href="#imbalance-collinearity-and-rank-deficiency-in-the-fixed-effects" id="toc-imbalance-collinearity-and-rank-deficiency-in-the-fixed-effects" class="nav-link" data-scroll-target="#imbalance-collinearity-and-rank-deficiency-in-the-fixed-effects">Imbalance, collinearity and rank deficiency in the fixed effects</a></li>
+  <li><a href="#rank-deficiency-in-the-random-effects-and-random-effects-selection" id="toc-rank-deficiency-in-the-random-effects-and-random-effects-selection" class="nav-link" data-scroll-target="#rank-deficiency-in-the-random-effects-and-random-effects-selection">Rank deficiency in the random effects and random effects selection</a></li>
+  <li><a href="#extending-this-all-to-glmm" id="toc-extending-this-all-to-glmm" class="nav-link" data-scroll-target="#extending-this-all-to-glmm">Extending this all to GLMM</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#how-do-you-write-your-model" id="toc-how-do-you-write-your-model" class="nav-link" data-scroll-target="#how-do-you-write-your-model">How do you write your model?</a>
+  <ul>
+  <li><a href="#the-general-linear-model" id="toc-the-general-linear-model" class="nav-link" data-scroll-target="#the-general-linear-model">The general linear model</a></li>
+  <li><a href="#some-of-the-assumptions-of-linear-regression" id="toc-some-of-the-assumptions-of-linear-regression" class="nav-link" data-scroll-target="#some-of-the-assumptions-of-linear-regression">Some of the assumptions of linear regression</a></li>
+  <li><a href="#observation-level" id="toc-observation-level" class="nav-link" data-scroll-target="#observation-level">Observation level</a>
+  <ul class="collapse">
+  <li><a href="#error-terms-formulation" id="toc-error-terms-formulation" class="nav-link" data-scroll-target="#error-terms-formulation">“Error terms” formulation</a></li>
+  <li><a href="#distribution-formulation" id="toc-distribution-formulation" class="nav-link" data-scroll-target="#distribution-formulation">“Distribution” formulation</a></li>
+  </ul></li>
+  <li><a href="#long-sums-over-lots-of-observations-are-annoying" id="toc-long-sums-over-lots-of-observations-are-annoying" class="nav-link" data-scroll-target="#long-sums-over-lots-of-observations-are-annoying">Long sums over lots of observations are annoying</a></li>
+  <li><a href="#matrices-are-convenient" id="toc-matrices-are-convenient" class="nav-link" data-scroll-target="#matrices-are-convenient">Matrices are convenient</a></li>
+  <li><a href="#matrix-level" id="toc-matrix-level" class="nav-link" data-scroll-target="#matrix-level">Matrix level</a>
+  <ul class="collapse">
+  <li><a href="#error-terms-formulation-1" id="toc-error-terms-formulation-1" class="nav-link" data-scroll-target="#error-terms-formulation-1">“Error terms” formulation</a></li>
+  <li><a href="#distribution-formulation-1" id="toc-distribution-formulation-1" class="nav-link" data-scroll-target="#distribution-formulation-1">“Distribution” formulation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#digression-maximum-likelihood-estimation" id="toc-digression-maximum-likelihood-estimation" class="nav-link" data-scroll-target="#digression-maximum-likelihood-estimation">Digression: Maximum Likelihood Estimation</a>
+  <ul>
+  <li><a href="#what-does-it-mean-to-fit-a-classical-linear-model" id="toc-what-does-it-mean-to-fit-a-classical-linear-model" class="nav-link" data-scroll-target="#what-does-it-mean-to-fit-a-classical-linear-model">What does it mean to fit a (classical linear) model?</a></li>
+  <li><a href="#what-is-likelihood-i" id="toc-what-is-likelihood-i" class="nav-link" data-scroll-target="#what-is-likelihood-i">What is likelihood? I</a></li>
+  <li><a href="#what-is-likelihood-ii" id="toc-what-is-likelihood-ii" class="nav-link" data-scroll-target="#what-is-likelihood-ii">What is likelihood? II</a></li>
+  <li><a href="#maximum-likelihood-estimation-mle" id="toc-maximum-likelihood-estimation-mle" class="nav-link" data-scroll-target="#maximum-likelihood-estimation-mle">Maximum likelihood estimation (MLE)</a></li>
+  </ul></li>
+  <li><a href="#what-does-the-math-mean-for-mixed-models" id="toc-what-does-the-math-mean-for-mixed-models" class="nav-link" data-scroll-target="#what-does-the-math-mean-for-mixed-models">What does the math mean for mixed models?</a>
+  <ul>
+  <li><a href="#what-do-these-parts-all-mean-i" id="toc-what-do-these-parts-all-mean-i" class="nav-link" data-scroll-target="#what-do-these-parts-all-mean-i">What do these parts all mean? I</a></li>
+  <li><a href="#what-do-these-parts-all-mean-ii" id="toc-what-do-these-parts-all-mean-ii" class="nav-link" data-scroll-target="#what-do-these-parts-all-mean-ii">What do these parts all mean? II</a></li>
+  <li><a href="#how-does-math-match-a-model-in-rjulia-i" id="toc-how-does-math-match-a-model-in-rjulia-i" class="nav-link" data-scroll-target="#how-does-math-match-a-model-in-rjulia-i">How does math match a model in R/Julia? I</a></li>
+  <li><a href="#how-does-math-match-a-model-in-rjulia-ii" id="toc-how-does-math-match-a-model-in-rjulia-ii" class="nav-link" data-scroll-target="#how-does-math-match-a-model-in-rjulia-ii">How does math match a model in R/Julia? II</a></li>
+  <li><a href="#what-does-the-term-random-effect-refer-to-anyway" id="toc-what-does-the-term-random-effect-refer-to-anyway" class="nav-link" data-scroll-target="#what-does-the-term-random-effect-refer-to-anyway">What does the term “random effect” refer to anyway?</a></li>
+  <li><a href="#why-variances-what-is-shrinkage" id="toc-why-variances-what-is-shrinkage" class="nav-link" data-scroll-target="#why-variances-what-is-shrinkage">Why variances? What is shrinkage?</a></li>
+  <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization">Regularization</a></li>
+  <li><a href="#shrinkage" id="toc-shrinkage" class="nav-link" data-scroll-target="#shrinkage">Shrinkage</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/palday/freiburg2022/edit/main/01-introduction.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/palday/freiburg2022/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Introduction to Simulation</h1>
+<p class="subtitle lead">Review of Mixed Models and Introduction to Model Notation</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Phillip Alday </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 6, 2022</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="preliminaries" class="level1">
+<h1>Preliminaries</h1>
+<section id="about-me" class="level2">
+<h2 class="anchored" data-anchor-id="about-me">About Me</h2>
+<ul>
+<li>2020–now Beacon Biosignals</li>
+<li>2017–2020 MPI for Psycholinguistics</li>
+<li>2015–2017 University of South Australia</li>
+<li>2015 Dr.Phil. Linguistik, Philipps-Universität Marburg</li>
+<li>2010 MA Germanistische Linguistik, Philipps-Universität Marburg</li>
+<li>2008 BA German Language and Literature, University of Notre Dame (USA)</li>
+<li>2008 BS Mathematics, University of Notre Dame (USA)</li>
+</ul>
+<p>also: minor contributor to lme4, occasionally prolific contributor to R-SIG-mixed-models, major contributor to MixedModels.jl</p>
+</section>
+<section id="plan-i" class="level2">
+<h2 class="anchored" data-anchor-id="plan-i">Plan I</h2>
+<p>This is waaaay more than we can do in a single day, but we’ll spend as much time as needed on the fundamentals and pick and choose the advanced topics based on that.</p>
+<section id="what-is-a-mixed-model-and-how-can-we-use-that-to-design-a-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-a-mixed-model-and-how-can-we-use-that-to-design-a-simulation">What is a mixed model and how can we use that to design a simulation?</h3>
+<ul>
+<li>A fair amount of math, sorry-not-sorry</li>
+<li>Model notation and what that means
+<ul>
+<li>where are the “random” bits?</li>
+<li>where are the assumptions?</li>
+</ul></li>
+<li>How mixed models differ from classical regression and what that means for things like degrees of freedom and hence p-values</li>
+<li>Reminder about contrast coding</li>
+</ul>
+</section>
+</section>
+<section id="plan-ii" class="level2 shrink">
+<h2 class="shrink anchored" data-anchor-id="plan-ii">Plan II</h2>
+<section id="parametric-bootstrap-and-power-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="parametric-bootstrap-and-power-analysis">Parametric bootstrap and power analysis</h3>
+<ul>
+<li>The parametric bootstrap is a simulation!</li>
+<li>Simulation-based power analysis can use the parametric bootstrap</li>
+<li>Julia is great …..</li>
+</ul>
+</section>
+<section id="imbalance-collinearity-and-rank-deficiency-in-the-fixed-effects" class="level3">
+<h3 class="anchored" data-anchor-id="imbalance-collinearity-and-rank-deficiency-in-the-fixed-effects">Imbalance, collinearity and rank deficiency in the fixed effects</h3>
+<ul>
+<li>Creating “imperfect” simulated data to understand the impact of the real-world on your ideal mdoel</li>
+<li>Embracing uncertainty</li>
+</ul>
+</section>
+<section id="rank-deficiency-in-the-random-effects-and-random-effects-selection" class="level3">
+<h3 class="anchored" data-anchor-id="rank-deficiency-in-the-random-effects-and-random-effects-selection">Rank deficiency in the random effects and random effects selection</h3>
+<ul>
+<li>What does it mean for the model to be rank deficient/singular/a boundary fit?</li>
+<li>Practical impacts of rank deficiency for various tests/convergence warnings <!-- (see also lme4 v1.1-29 (2022-04-07)) --></li>
+<li>Variance-bias tradeoff; over- vs.&nbsp;underfitting and what that means for your inference.</li>
+</ul>
+</section>
+<section id="extending-this-all-to-glmm" class="level3">
+<h3 class="anchored" data-anchor-id="extending-this-all-to-glmm">Extending this all to GLMM</h3>
+<ul>
+<li>Lower power</li>
+<li>Link functions and a different observation-level random component</li>
+<li>Conditional vs.&nbsp;marginal effects</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="how-do-you-write-your-model" class="level1">
+<h1>How do you write your model?</h1>
+<section id="the-general-linear-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-general-linear-model">The general linear model</h2>
+<p><span class="math display">\[ y_i = \beta_{1}x_{i,1} + \beta_{0} + \varepsilon_i \]</span></p>
+<ul>
+<li>Independent variable(s) measured without error</li>
+<li>Dependent variable a linear function of independent variable plus some error / random variation</li>
+<li>Assumptions about the distribution of the error very important!</li>
+</ul>
+</section>
+<section id="some-of-the-assumptions-of-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="some-of-the-assumptions-of-linear-regression">Some of the assumptions of linear regression</h2>
+<ul>
+<li>independence of <em>errors</em></li>
+<li>equal variance of <em>errors</em> (homoskedacity)</li>
+<li>normality of <em>errors</em></li>
+</ul>
+<div class="incremental">
+<p>And that’s roughly the order of importance!</p>
+</div>
+</section>
+<section id="observation-level" class="level2">
+<h2 class="anchored" data-anchor-id="observation-level">Observation level</h2>
+<section id="error-terms-formulation" class="level3">
+<h3 class="anchored" data-anchor-id="error-terms-formulation">“Error terms” formulation</h3>
+<p><span class="math display">\[ y_i = \beta_{0} + \beta_{1}x_{i,1} + \ldots + \beta_{p}x_{i,p} + \varepsilon_i \]</span> <span class="math display">\[ \varepsilon_i \sim \mathcal{N}(0, \sigma^2) \]</span></p>
+<p>for the <span class="math inline">\(i\)</span>th observation (of <span class="math inline">\(n\)</span> total) of <span class="math inline">\(p\)</span> predictors</p>
+</section>
+<section id="distribution-formulation" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-formulation">“Distribution” formulation</h3>
+<p><span class="math display">\[ y_i \sim \mathcal{N}(\mu_i, \sigma^2) \]</span> <span class="math display">\[ \mu_i =
+\beta_{0} + \beta_{1}x_{i,1} + \ldots + \beta_{p}x_{i,p} \]</span></p>
+<p>This was inspired by <a href="http://www.sumsar.net/blog/2013/10/how-do-you-write-your-model-definitions/">a great blog post by Rasmus Bååth</a>, which you really should read.</p>
+</section>
+</section>
+<section id="long-sums-over-lots-of-observations-are-annoying" class="level2">
+<h2 class="anchored" data-anchor-id="long-sums-over-lots-of-observations-are-annoying">Long sums over lots of observations are annoying</h2>
+<ul>
+<li>Writing <span class="math inline">\(\beta_{0} + \beta_{1}x_{i,1} + \ldots + \beta_{p}x_{i,p}\)</span> gets old fast.</li>
+<li>so often use sigma notation: <span class="math display">\[ \beta_0 + \sum_{j=1}^{p}  \beta_{j}x_{i,j} = \beta_{0} + \beta_{1}x_{i,1} + \ldots + \beta_{p}x_{i,p}\]</span></li>
+<li>but even this is annoying</li>
+</ul>
+</section>
+<section id="matrices-are-convenient" class="level2">
+<h2 class="anchored" data-anchor-id="matrices-are-convenient">Matrices are convenient</h2>
+<p>way to express a system of equations resulting from <span class="math inline">\(n\)</span> observations with <span class="math inline">\(p\)</span> predictors/covariates:</p>
+<p><span class="math display">\[\begin{equation*}
+%\underbrace{%
+\overbrace{%
+\begin{bmatrix}
+y_1 \\
+y_2 \\
+y_3 \\
+\vdots \\
+y_{n-1} \\
+y_n \\
+\end{bmatrix}}^{\textstyle n \times 1}
+=
+\overbrace{%
+\begin{bmatrix}
+1 &amp; x_{1,1} &amp; \ldots &amp; x_{1,p} \\
+1 &amp; x_{2,1} &amp; \ldots &amp; x_{2,p} \\
+1 &amp; x_{3,1} &amp; \ldots &amp; x_{3,p} \\
+&amp; &amp; \vdots &amp; \\
+1 &amp; x_{n-1,1} &amp; \ldots &amp; x_{n-1,p} \\
+1 &amp; x_{n,1} &amp; \ldots &amp; x_{n,p} \\
+\end{bmatrix}}^{\textstyle n \times p}
+\overbrace{%
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_p \\
+\end{bmatrix}}^{\textstyle p \times 1}
++
+\overbrace{%
+\begin{bmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\varepsilon_3 \\
+\vdots \\
+\varepsilon_{n-1} \\
+\varepsilon_n \\
+\end{bmatrix}}^{\textstyle n \times 1}%
+%}_{\textstyle\bf Y = X\beta + \varepsilon}
+\end{equation*}\]</span></p>
+<p>becomes <span class="math inline">\(y = X\beta + \varepsilon\)</span></p>
+</section>
+<section id="matrix-level" class="level2">
+<h2 class="anchored" data-anchor-id="matrix-level">Matrix level</h2>
+<section id="error-terms-formulation-1" class="level3">
+<h3 class="anchored" data-anchor-id="error-terms-formulation-1">“Error terms” formulation</h3>
+<p><span class="math display">\[Y = X\beta + \varepsilon\]</span> <span class="math display">\[\varepsilon \sim \mathcal{N}(0,\sigma^2)\]</span></p>
+</section>
+<section id="distribution-formulation-1" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-formulation-1">“Distribution” formulation</h3>
+<p><span class="math display">\[Y \sim \mathcal{N}(\mu,\sigma^2)\]</span> <span class="math display">\[\mu = X\beta \]</span></p>
+<hr>
+<p>We usually learn and conceive of the linear model in terms of “line of best fit” plus some “error” so the distribution formulation seems a bit weird at first.</p>
+<div class="incremental">
+<p>It is much more convenient when we start looking at extensions of linear regression, such as the linear mixed-effects model:</p>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}( X\beta + Zb, \sigma^2 I ) \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+</div>
+</section>
+</section>
+</section>
+<section id="digression-maximum-likelihood-estimation" class="level1">
+<h1>Digression: Maximum Likelihood Estimation</h1>
+<section id="what-does-it-mean-to-fit-a-classical-linear-model" class="level2">
+<h2 class="anchored" data-anchor-id="what-does-it-mean-to-fit-a-classical-linear-model">What does it mean to fit a (classical linear) model?</h2>
+<p><span class="math display">\[Y \sim \mathcal{N}(\mu,\sigma^2)\]</span> <span class="math display">\[\mu = X\beta \]</span></p>
+<ul>
+<li>Minimize sum of squares? (and what sum of squares are we talking about?)</li>
+<li>Maximize likelihood?</li>
+<li>Minimize deviance?</li>
+</ul>
+<div class="incremental">
+<ul>
+<li>All equivalent for classical linear models</li>
+<li>Also equivalent to finding <span class="math inline">\(\beta\)</span> that leads to the smallest <span class="math inline">\(\sigma^2\)</span></li>
+<li>Ordinary least squares is the maximum likelihood estimator and BLUE (best, linear unbiased estimator )</li>
+</ul>
+</div>
+</section>
+<section id="what-is-likelihood-i" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-likelihood-i">What is likelihood? I</h2>
+<p>One of the hardest parts about statistics (and math in general) is that everyday words are given precise technical meanings.</p>
+<ul>
+<li><span class="math inline">\(P(H|D)\)</span>: posterior probability</li>
+<li><span class="math inline">\(P(D|H)\)</span>: likelihood</li>
+</ul>
+<p>Related via Bayes’ Theorem: <span class="math display">\[ P(H|D) = \frac{P(D|H)P(H)}{P(D)}\]</span></p>
+</section>
+<section id="what-is-likelihood-ii" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-likelihood-ii">What is likelihood? II</h2>
+<blockquote class="blockquote">
+<p>… remember that “likelihood” is a technical term. The likelihood of <span class="math inline">\(H\)</span>, <span class="math inline">\(Pr(O\|H)\)</span>, and the posterior probability of <span class="math inline">\(H\)</span>, <span class="math inline">\(Pr(H\|O)\)</span>, are different quantities and they can have different values. The likelihood of <span class="math inline">\(H\)</span> is the probability that <span class="math inline">\(H\)</span> confers on <span class="math inline">\(O\)</span>, not the probability that <span class="math inline">\(O\)</span> confers on <span class="math inline">\(H\)</span>. Suppose you hear a noise coming from the attic of your house. You consider the hypothesis that there are gremlins up there bowling. The likelihood of this hypothesis is very high, since if there are gremlins bowling in the attic, there probably will be noise. But surely you don’t think that the noise makes it very probable that there are gremlins up there bowling. … The gremlin hypothesis has a high likelihood (in the technical sense) but a low probability.</p>
+</blockquote>
+<p>Sober, E. (2008). Evidence and Evolution: the Logic Behind the Science. Cambridge University Press.</p>
+</section>
+<section id="maximum-likelihood-estimation-mle" class="level2">
+<h2 class="anchored" data-anchor-id="maximum-likelihood-estimation-mle">Maximum likelihood estimation (MLE)</h2>
+<ul>
+<li>find the coefficients / predictor that maximizes the likelihood</li>
+<li>i.e.&nbsp;find the quantitative hypothesis which has the best chance of generating the observed data</li>
+<li>many numerical, iterative techniques for doing this (implemented in R with <code>glm()</code>)</li>
+<li>some classes of models have a closed-form / easily / directly computable solution (e.g.&nbsp;ordinary least-squares, implemented in R with <code>lm()</code>)</li>
+</ul>
+<p>Most of the methods you know are based on this technique.</p>
+</section>
+</section>
+<section id="what-does-the-math-mean-for-mixed-models" class="level1">
+<h1>What does the math mean for mixed models?</h1>
+<section id="what-do-these-parts-all-mean-i" class="level2">
+<h2 class="anchored" data-anchor-id="what-do-these-parts-all-mean-i">What do these parts all mean? I</h2>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &amp;= X\beta + Zb \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+<ul>
+<li>The reponse, conditional on the predicted mean <span class="math inline">\(\mu\)</span> is normally distributed</li>
+<li><span class="math inline">\(\sigma^2 I\)</span> is homoskedacity in a multivariate context:
+<ul>
+<li>single shared residual variance (<span class="math inline">\(\sigma^2\)</span>)</li>
+<li>no autocorrelation or the like (everything happens on the diagonal <span class="math inline">\(\bf{I}\)</span>)</li>
+</ul></li>
+<li><span class="math inline">\(Z\)</span> is a matrix of indicator variables for levels (individual membership) of the grouping variable</li>
+<li>The predicted mean for an individual is thus the sum of the population-level effect (<span class="math inline">\(X\beta\)</span>) and the predicted offsets for that individual (<span class="math inline">\(b\)</span>).</li>
+</ul>
+</section>
+<section id="what-do-these-parts-all-mean-ii" class="level2">
+<h2 class="anchored" data-anchor-id="what-do-these-parts-all-mean-ii">What do these parts all mean? II</h2>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &amp;= X\beta + Zb \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+<ul>
+<li>The observed random effects <span class="math inline">\(b\)</span> are draws from some latent distribution <span class="math inline">\(B\)</span>, which is normally distributed with mean 0 and some covariance structure <span class="math inline">\(\Sigma _\theta\)</span>.</li>
+<li>Technically, we’re not estimating the <span class="math inline">\(b\)</span>, but rather <em>predicting</em> them. Instead, we’re estimating their covariance <span class="math inline">\(\Sigma _\theta\)</span>.</li>
+<li>This is actually really profound and important because it means we don’t add additional parameters to the model when adding e.g.&nbsp;additional participants, items, etc.</li>
+<li>More on this and its relationship to “shrinkage” in just a bit.</li>
+</ul>
+</section>
+<section id="how-does-math-match-a-model-in-rjulia-i" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-math-match-a-model-in-rjulia-i">How does math match a model in R/Julia? I</h2>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &amp;= X\beta + Zb \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Linear mixed model fit by maximum likelihood</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> reaction <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> days <span class="op">+</span> (<span class="fl">1</span> <span class="op">+</span> days <span class="op">|</span> subj)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Variance components<span class="op">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            Column    Variance Std.Dev.   Corr.</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>subj     (Intercept)  <span class="fl">565.51067</span> <span class="fl">23.78047</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         days          <span class="fl">32.68212</span>  <span class="fl">5.71683</span> <span class="op">+</span><span class="fl">0.08</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Residual              <span class="fl">654.94145</span> <span class="fl">25.59182</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a> <span class="dt">Number</span> of obs<span class="op">:</span> <span class="fl">180</span>; levels of grouping factors<span class="op">:</span> <span class="fl">18</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="how-does-math-match-a-model-in-rjulia-ii" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-math-match-a-model-in-rjulia-ii">How does math match a model in R/Julia? II</h2>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &amp;= X\beta + Zb \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  Fixed<span class="op">-</span>effects parameters<span class="op">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>──────────────────────────────────────────────────</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                Coef.  Std. Error      z  <span class="fu">Pr</span>(<span class="op">&gt;|</span>z<span class="op">|</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>──────────────────────────────────────────────────</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>(Intercept)  <span class="fl">251.405</span>      <span class="fl">6.63226</span>  <span class="fl">37.91</span>    <span class="op">&lt;</span><span class="fl">1e-99</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>days          <span class="fl">10.4673</span>     <span class="fl">1.50224</span>   <span class="fl">6.97</span>    <span class="op">&lt;</span><span class="fl">1e-11</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>──────────────────────────────────────────────────</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="what-does-the-term-random-effect-refer-to-anyway" class="level2">
+<h2 class="anchored" data-anchor-id="what-does-the-term-random-effect-refer-to-anyway">What does the term “random effect” refer to anyway?</h2>
+<p>Depending on context, it can refer to:</p>
+<ul>
+<li>the entire random variable <span class="math inline">\(B\)</span> and associated design matrix <span class="math inline">\(Z\)</span></li>
+<li>the estimated variance components and associated covariances/correlations <span class="math inline">\(\Sigma _\theta\)</span></li>
+<li>the blocking/grouping variables (the stuff behind <code>|</code>)</li>
+<li>the random slopes/intercepts (experimental variables which determine the structure of <span class="math inline">\(Z\)</span>) associated with blocking variables (the stuff in front of <code>|</code>)</li>
+<li>the associated predictions for the varying slopes/intercepts at each level of the blocking variables (the <span class="math inline">\(b\)</span>, a.k.a the BLUPs or conditional modes)</li>
+</ul>
+<p>There are good reasons why all of these things get the same name in different contexts, so you just have to live with the ambiguity. But understanding that these are different will help you to be clear in your own writing and to understand where others may be having misunderstandings.</p>
+</section>
+<section id="why-variances-what-is-shrinkage" class="level2">
+<h2 class="anchored" data-anchor-id="why-variances-what-is-shrinkage">Why variances? What is shrinkage?</h2>
+<p><span class="math display">\[\begin{align*}
+(Y | B = b ) &amp;\sim \mathcal{N}(\mu, \sigma^2 I ) \\
+  \mu &amp;= X\beta + Zb \\
+  B &amp;\sim \mathcal{N}(0, \Sigma _\theta)
+\end{align*}\]</span></p>
+<ul>
+<li>fewer parameters</li>
+<li>everything in one model step</li>
+<li>sharing of information between different levels of the grouping variables
+<ul>
+<li>“sharing strength” (Tukey)</li>
+<li>“partial pooling”</li>
+<li>regularization / shrinkage towards the grand mean</li>
+</ul></li>
+<li>shared strength means better estimates for the weak</li>
+<li>in OLS, our goal was in some sense to minimize <span class="math inline">\(\sigma^2\)</span>; here are goal in some sense is to jointly minimize <span class="math inline">\(\sigma^2\)</span> and <span class="math inline">\(\Sigma _\theta\)</span></li>
+</ul>
+</section>
+<section id="regularization" class="level2">
+<h2 class="anchored" data-anchor-id="regularization">Regularization</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="01-introduction_files/figure-html/fig-r-sleepstudy-lines-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="shrinkage" class="level2">
+<h2 class="anchored" data-anchor-id="shrinkage">Shrinkage</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="01-introduction_files/figure-html/fig-r-sleepstudy-shrinkage-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">Copyright 2022, Phillip Alday. Code examples are MIT-licensed.</div>
+  </div>
+</footer>
+
+
+
+</body></html>
