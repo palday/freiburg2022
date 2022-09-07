@@ -87,14 +87,14 @@ summary(m2c)
 ## Effects plots are your friend I
 
 ```{r}
-groundhog.library("effects", "2022-04-28")
+groundhog.library("effects", "2022-07-14")
 plot(allEffects(m2), multiline=TRUE, ci.style="band")
 ```
 
 ## Effects plots are your friend II
 
 ```{r}
-plot(allEffects(m2), multiline=TRUE, ci.style="band")
+plot(allEffects(m2c), multiline=TRUE, ci.style="band")
 ```
 
 ## Centering, scaling and contrast coding in linear regression
@@ -106,7 +106,7 @@ plot(allEffects(m2), multiline=TRUE, ci.style="band")
 
 ## Doing this in Julia
 
-```{julia}
+```julia
 using DataFrames, GLM, StatsModels, Random
 
 rng = MersenneTwister(42);
@@ -133,7 +133,7 @@ m2 = lm(form, dat)
 ## Imbalance
 
 ```{r}
-groundhog.library("car", "2022-04-28")
+groundhog.library("car", "2022-07-14")
 set.seed(42)
 form <- y ~ 1 + x
 beta <- c(1, 42, 42)
@@ -230,7 +230,7 @@ summary(lm(form, dat))
 
 ```{r}
 set.seed(42)
-groundhog.library("lme4", "2022-04-28")
+groundhog.library("lme4", "2022-07-14")
 form_fe <- y ~ 1 + x
 form <- y ~ 1 + x + (1 | subj)
 
@@ -258,7 +258,7 @@ summary(mm1)
 ## Check to make sure that we recover the BLUPs
 
 ```{r}
-groundhog.library(c("broom.mixed","ggplot2"), "2022-04-28")
+groundhog.library(c("broom.mixed","ggplot2"), "2022-07-14")
 dd <- tidy(mm1, effects="ran_vals")
 dd <- transform(dd, level=reorder(level,estimate))
 truth <- data.frame(level=LETTERS[1:n_subj],estimate=b)
@@ -323,7 +323,7 @@ summary(mm2)
 ## simr fixef I
 
 ```{r}
-groundhog.library("simr", "2022-04-28")
+groundhog.library("simr", "2022-07-14")
 fixef(mm2) <- beta
 # note that the estimates have been overridden, but nothing else updated
 summary(mm2)
@@ -392,7 +392,7 @@ summary(lmer(form, dat, REML=FALSE))
 ## Create the ground truth
 
 ```{r}
-groundhog.library("tidyverse", "2022-04-28")
+groundhog.library("tidyverse", "2022-07-14")
 set.seed(42)
 
 # ==== Generate the Design ===

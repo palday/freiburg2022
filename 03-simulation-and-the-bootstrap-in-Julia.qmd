@@ -11,6 +11,12 @@ execute-dir: project
 jupyter: julia-1.7
 ---
 
+```{julia}
+#| include: false
+using Pkg
+Pkg.activate(".")
+```
+
 # Recall....
 
 ```{julia}
@@ -73,8 +79,11 @@ results = DataFrame()
 
 simple_model = fit(MixedModel, simple_form, kb07; contrasts)
 
-@showprogress for i in 1:100
-    # dat[!, :rt_runc]
+# if doing this yourself, add
+# @showprogress
+# before the for-loop and get an automatic progress bar
+# courtesy of ProgressMeter.jl
+for i in 1:100
     refit!(simple_model, simulate(rng, model); progress=false)
     est = DataFrame(coeftable(simple_model))
     est[!, :iter] .= i
